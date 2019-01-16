@@ -3,6 +3,12 @@
 7-Segment Displays - Multiplexing by Segment
 --------------------------------------------
 
+
+Note:  There is a video associated with this repo:
+
+https://www.youtube.com/watch?v=8w09Zy8MQrc
+
+
 Multiplexing 7-segment displays by segment can eliminate
 the need for resistors on the segment driver lines, and
 transistors on the common anode/cathode pins, as required
@@ -18,10 +24,10 @@ of processor pins used for the displays.  The number of MCU
 pins needed with the 4017 setup equals the number of
 digits, plus one.
 
-Also included are Arduino sketches providing demonstration
-code for both the regular by-segment method and the 4017
-method.  The sketches have more details on how this all
-works.
+Also included are Arduino sketches for the Nano providing
+demonstration code for both the regular by-segment method
+and the 4017 method.  The sketches have more details on how
+this all works.
 
 One Segment at a Time
 ---------------------
@@ -41,11 +47,4 @@ Since each segment is ON only 1/7 of the time, the refresh
 rate will have to be speeded up so that each segment will
 be refreshed 40-70 times per second to avoid flicker or
 shimmer. The included sketches update the display every two
-millis.
-
-Video
------
-
-There is a video associated with this project.  This file
-will be updated with the link when that video has found a
-home.
+millis, which is 500 Hz, or 71 Hz for an individual segment.
