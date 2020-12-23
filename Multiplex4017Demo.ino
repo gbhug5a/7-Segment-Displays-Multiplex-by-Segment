@@ -7,6 +7,7 @@ common cathode displays. The schematic is also found in this repository.
 
 const byte SEGMENTS  = 7;                  //Number of segments. 8 if using DP
 const byte DISPLAYS  = 2;                  //Number of displays used - two here
+const byte Refresh   = 3;                  //Number of millis changes between segments
 
    // Define the pin used to clock the 74HC4017
 
@@ -59,6 +60,7 @@ byte charArray[] = {char0, char1, char2, char3, char4, char5,
 
 unsigned long PREVmillis;
 unsigned long CURmillis;
+byte milliCount = 0;                       //Number of millis changes so far
 
 byte SEGCOUNT;                             //Segment counter - zero to six (or seven)
 byte CURSEG;                               //Current segment bit position
@@ -94,7 +96,7 @@ void setup() {
      // Initialize so everything else also points to segment A
 
   SEGCOUNT   = 0;                          //Segments counter - set to segment A
-  CURSEG     = bit(0);                     //Bit position of segment A
+  CURSEG     = 1;                          //Bit position of segment A
 
   PREVmillis = millis();
 
@@ -103,16 +105,18 @@ void setup() {
 
   DIGIT[0]    = char2;                     //Current segment pattern of Digit0 "2"
   DIGIT[1]    = char4;                     //Current segment pattern of Digit1 "4"
-
 }
 
 
 void loop() {
 
   CURmillis = millis();
-  if ((CURmillis - PREVmillis) > 1) {    // 2ms refresh period = 71 Hz per segment
-
+  if (CURmillis != PREVmillis) {
+    milliCount++;
     PREVmillis = CURmillis;
+  }
+  if (milliCount == Refresh) {
+    milliCount = 0;
 
        //This section selects the next segment
 
@@ -120,7 +124,7 @@ void loop() {
     SEGCOUNT  += 1;                      //and increment the count
     if (SEGCOUNT == SEGMENTS) {          //if done with last segment, start over
       SEGCOUNT = 0;                      //re-initialize
-      CURSEG   = bit(0);
+      CURSEG   = 1;
     }
 
        //Turn the CC pins OFF while making changes - prevents ghosting

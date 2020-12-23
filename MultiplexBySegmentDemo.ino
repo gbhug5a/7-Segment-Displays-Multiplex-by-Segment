@@ -26,6 +26,7 @@ as the Vishay TDSR1360-IK), can help avoid that problem.
 
 const byte SEGMENTS  = 7;    //Number of segments. 8 if using decimal point
 const byte DIGITS    = 2;    //Number of displays used - two in this example
+const byte Refresh   = 3;    //Number of millis changes between segments 
 
    // Define the pins used for the common segments - need not be consecutive
 
@@ -43,8 +44,8 @@ byte SEGARRAY[]  = {SEGApin, SEGBpin, SEGCpin, SEGDpin, SEGEpin, SEGFpin, SEGGpi
 
    // Define pins used by common anodes or common cathodes - add others as needed
 
-const byte CACC0pin  = 3;
-const byte CACC1pin  = 6;
+const byte CACC0pin  = 6;
+const byte CACC1pin  = 3;
 
    // Array allows using any number of digits - add others as needed
 
@@ -98,9 +99,9 @@ byte charArray[] = {char0, char1, char2, char3, char4, char5,
 unsigned long PREVmillis;
 unsigned long CURmillis;
 
-byte SEGCOUNT;  //Segment counter - count up to SEGMENTS value
-byte CURSEG;    //Current segment bit position
-
+byte SEGCOUNT;                           //Segment counter - count up to SEGMENTS value
+byte CURSEG;                             //Current segment bit position
+byte milliCount = 0;                     //Number of millis changes so far
 byte i;
 
 void setup() {
@@ -129,8 +130,8 @@ void setup() {
      // Below for demo purposes - normally to display a VALUE 0-9, it would be
      //     DIGIT[i] = charArray[VALUE]
 
-  DIGIT[0]    = char2;                     //Current segment pattern of Digit0 "2"
-  DIGIT[1]    = char4;                     //Current segment pattern of Digit1 "4"
+  DIGIT[0]    = char8;                     //Current segment pattern of Digit0 "2"
+  DIGIT[1]    = char8;                     //Current segment pattern of Digit1 "4"
 
 }
 
@@ -138,35 +139,37 @@ void setup() {
 void loop() {
 
   CURmillis = millis();
-  if ((CURmillis - PREVmillis) > 1) {    // 2ms refresh period = 71 Hz per segment
-
+  if (CURmillis != PREVmillis) {
+    milliCount++;
     PREVmillis = CURmillis;
-
+  }
+  if (milliCount == Refresh) {
+    milliCount = 0;
+  
        // Turn the current segment OFF while making changes - prevents ghosting
 
     digitalWrite(SEGARRAY[SEGCOUNT], SEGOFF);
 
        //This section selects the next segment
 
-    CURSEG     = CURSEG << 1;            //shift to next bit position
-    SEGCOUNT  += 1;                      //used as index into SEGARRAY
+    CURSEG     = CURSEG << 1;            //shift left to next bit position
+    SEGCOUNT++;                          //used as index into SEGARRAY
     if (SEGCOUNT == SEGMENTS) {          //if done with last segment, start over
       SEGCOUNT = 0;                      //re-initialize
-      CURSEG   = bit(0);
+      CURSEG   = 1;
     }
 
        //This section turns the CA or CC pins on/off per the patterns of the characters
        //If the CURSEG bit of the DIGIT[n] segment pattern is 1, turn on the CACCpin[n]
 
     for(i = 0; i < DIGITS; ++i) {
-    if (DIGIT[i] & CURSEG) digitalWrite(CACCpin[i], CACCON);
-    else digitalWrite(CACCpin[i], CACCOFF);
+      if (DIGIT[i] & CURSEG) digitalWrite(CACCpin[i], CACCON);
+      else digitalWrite(CACCpin[i], CACCOFF);
     }
 
        // Now turn the new segment driver ON
 
     digitalWrite(SEGARRAY[SEGCOUNT], SEGON);
-
   }
 
 }
