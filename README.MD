@@ -3,9 +3,14 @@
 ## 7-Segment Displays - Multiplexing by Segment
 
 
-Note:  There is a video associated with this repo:
+Note 1:  There is a video associated with this repo:
 
 [https://www.youtube.com/watch?v=8w09Zy8MQrc](https://www.youtube.com/watch?v=8w09Zy8MQrc)
+
+Note 2:  The sketches were updated 12/23/2020 to eliminate
+flicker when the millis() value updates by two.  The
+displays now update every three milliseconds without
+flicker.
 
 
 Multiplexing 7-segment displays by segment can eliminate
@@ -45,5 +50,6 @@ TDSR 1360-IK, may mitigate that problem.
 Since each segment is ON only 1/7 of the time, the refresh
 rate will have to be speeded up so that each segment will
 be refreshed 40-70 times per second to avoid flicker or
-shimmer. The included sketches update the display every two
-millis, which is 500 Hz, or 71 Hz for an individual segment.
+shimmer. The included sketches update the display every
+three milliseconds, which is 333 Hz, or 48 Hz for an
+individual segment.
